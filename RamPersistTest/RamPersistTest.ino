@@ -4,24 +4,13 @@ uint8_t u8Test[TLEN];
 
 // https://github.com/KurtE/MemoryHexDump :: T:\T_Drive\tCode\libraries\MemoryHexDump
 #include <MemoryHexDump.h>
-/*
-  void MemoryHexDump(Print& out, void const* address, size_t count, bool remove_duplicate_lines,
-	const char *szTitle=NULL, uint32_t max_output_lines=(uint32_t)-1,
-	uint32_t starting_display_addr = (uint32_t)-1 );
-*/
 
 // 	DTCM (rwx):  ORIGIN = 0x20000000, LENGTH = 512K  // RAM1
 //  RAM (rwx):   ORIGIN = 0x20200000, LENGTH = 512K  // RAM2 - DMAMEM
 //  ERAM (rwx):  ORIGIN = 0x70000000, LENGTH = 16384K // t_4.1 psram
 // Teensy 4.1 external RAM address range is 0x70000000 to 0x7FFFFFFF
 
-// ??? #define TSize
-
-//DMAMEM char midipromptsDM[12][8];
-//EXTMEM char midipromptsEM[12][8];
 extern uint8_t external_psram_size;
-
-// TODO record block groups start and stop: do MemHexDump on the block
 uint32_t iTrack[12][3];
 uint32_t iTii;
 char iTlabels[3][32] = { "Pre allocated X", "Overwritten/LOST -", "Static maintained +" };
@@ -128,66 +117,16 @@ void setup() {
   if (external_psram_size) Serial.printf("PSRAM size %u\n", external_psram_size); // Test this too?
 }
 
+extern "C" uint32_t set_arm_clock(uint32_t frequency);
+#include "intervaltimer.h"
+IntervalTimer Alpha;
+void testAlpha() {
+  Alpha.end();
+}
 void loop() {
   if ( Serial.available() ) _reboot_Teensyduino_();
+  if ( F_CPU_ACTUAL > 30000000 ) // T_4.0 at 35C==95F w/WFI
+    set_arm_clock(24000000);
+  Alpha.begin( testAlpha, 2000000 ); // T_4.0 at 45C==113F
+  asm volatile( "wfi" );  // WFI instruction will start entry into STOP mode
 }
-
-/*
-  23:45:13.746 (loader): using encrypted ehex (required - secure mode is locked)
-  DRAM Persist test
-  PSRAM size 16
-  ._._._._._._._._._._._._._ Bytes 510976 is 499 KB
-
-  Start Address 0x20203088 End at 0x2027fc88
-  XXXXXXXXXXXXX13+1-------------------------25+++++++++++50
-  ++++++++++++++25-1+++++++++++++++++++++++++++++++++++100
-  ++++++++++++++++++++++++++++++++++++++++++++++++++150
-  ++++++++++++++++++++++++++++++++++++++++++++++++++200
-  ++++++++++++++++++++++++++++++++++++++++++++++++++250
-  ++++++++++++++++++++++++++++++++++++++++++++++++++300
-  ++++++++++++++++++++++++++++++++++++++++++++++++++350
-  ++++++++++++++++++++++++++++++++++++++++++++++++++400
-  ++++++++++++++++++++++++++++++++++++++++++++++++++450
-  ++++++++++++++++++++++++++++++++++++++++++++++++++500
-  ++++++++++++
-  END:: DRAM Persist test
-
-  23:39:52.206 (loader): using hex file - Teensy not configured for encryption
-  DRAM Persist test
-  PSRAM size 8
-  ._._._._._._._._._._._._._ Bytes 510976 is 499 KB
-
-  Start Address 0x20203088 End at 0x2027fc88
-  XXXXXXXXXXXXX13+1-------------------19+++++++++++++++++50
-  ++++++++++++++++++++++++++++++++++++++++++++++++++100
-  ++++++++++++++++++++++++++++++++++++++++++++++++++150
-  ++++++++++++++++++++++++++++++++++++++++++++++++++200
-  ++++++++++++++++++++++++++++++++++++++++++++++++++250
-  ++++++++++++++++++++++++++++++++++++++++++++++++++300
-  ++++++++++++++++++++++++++++++++++++++++++++++++++350
-  ++++++++++++++++++++++++++++++++++++++++++++++++++400
-  ++++++++++++++++++++++++++++++++++++++++++++++++++450
-  ++++++++++++++++++++++++++++++++++++++++++++++++++500
-  ++++++++++++
-  END:: DRAM Persist test
-
-  23:49:08.144 (loader): elf file is for Teensy 4.0 (IMXRT1062)
-  23:49:08.149 (loader): using hex file - Teensy not configured for encryption
-  DRAM Persist test
-  PSRAM size 0
-  ._._._._._._._._._._._._._ Bytes 510976 is 499 KB
-
-  Start Address 0x20203088 End at 0x2027fc88
-  XXXXXXXXXXXXX13+1-------------------19+++++++++++++++++50
-  ++++++++++++++++++++++++++++++++++++++++++++++++++100
-  ++++++++++++++++++++++++++++++++++++++++++++++++++150
-  ++++++++++++++++++++++++++++++++++++++++++++++++++200
-  ++++++++++++++++++++++++++++++++++++++++++++++++++250
-  ++++++++++++++++++++++++++++++++++++++++++++++++++300
-  ++++++++++++++++++++++++++++++++++++++++++++++++++350
-  ++++++++++++++++++++++++++++++++++++++++++++++++++400
-  ++++++++++++++++++++++++++++++++++++++++++++++++++450
-  ++++++++++++++++++++++++++++++++++++++++++++++++++500
-  ++++++++++++
-  END:: DRAM Persist test
-*/
