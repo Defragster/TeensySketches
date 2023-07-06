@@ -16,7 +16,7 @@ void loop() {
   pinMode( 13, OUTPUT );
   digitalToggle( 13 );
   Serial.printf( "   deg  C=%2.2f\n" , tempmonGetTemp() );
-  delay(2); // USB print interrupts will wake WFI so delay until print complete
+  delayMicroseconds(100); // USB print interrupts will wake WFI so delay until print complete
 #endif
   if ( F_CPU_ACTUAL > 30000000 ) // T_4.0 at 35C==95F w/WFI
     set_arm_clock(24000000);
