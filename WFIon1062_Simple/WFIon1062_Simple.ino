@@ -4,11 +4,12 @@ void callback() {
   asm("dsb");                      // wait until flag is synced over the busses to prevent double calls of the isr
 }
 
+valPIF given divisor of 32Khz of 15-0 = Hz: 15=1, 14=2, 13=4, ..., 3=4096, 2=8192, 1=16384, 0=32772
 void setupRTCInterrupt( uint8_t valPIF ) {
   // disable periodic interrupt
   SNVS_HPCR &= ~SNVS_HPCR_PI_EN;
   while ((SNVS_HPCR & SNVS_HPCR_PI_EN)) {}  //The RTC is a slow peripheral, need to spin until PI_EN is reset...
-  SNVS_HPCR = SNVS_HPCR_PI_FREQ( valPIF );  // change to 0b1111 if you need a 1s interrupt
+  SNVS_HPCR = SNVS_HPCR_PI_FREQ( valPIF );
   // enable periodic interrupt
   SNVS_HPCR |= SNVS_HPCR_PI_EN;
   while (!(SNVS_HPCR & SNVS_HPCR_PI_EN)) {}  // spin until PI_EN is set...
