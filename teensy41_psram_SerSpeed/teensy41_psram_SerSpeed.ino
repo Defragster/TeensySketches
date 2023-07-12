@@ -39,6 +39,8 @@ void loop_ISR() {
     if (Serial.available()) {
       b[ii++] = c = Serial.read();
     }
+    else
+      break;
   } while (c != '\n');
   if (ii > 0) {
     b[ii] = 0;
