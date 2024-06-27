@@ -5,6 +5,24 @@ int led = 13;
 int resetPin = 3;  // PIN connected to ESP32 RESET
 int pin0 = 2;   // PIN connected to ESP32 GPIO 0
 
+/* FULL PIN CONNECTION as used for WifiNina
+ *  For Dual Proxy upload and control these are used
+ *  Teensy Tx pin 0 to ESP32 Rx
+ *  Teensy Rx pin 1 to ESP32 Tx
+ *  Teensy pin 2 to ESP32 GPIO 0
+ *  Teensy pin 3 to ESP32 Reset/Enable
+ *  Connect a common GND
+ *  If ESP32 not USB powered, power from Teensy Vin=5V if appropriate
+ *  
+ *  In WiFinina Example sketches
+  #elif defined(TEENSYDUINO) 
+  #define SPIWIFI       SPI  // The SPI port
+  #define SPIWIFI_SS     10   // Chip select pin
+  #define ESP32_RESETN   3   // Reset pin
+  #define SPIWIFI_ACK    4   // a.k.a BUSY or READY pin
+  #define ESP32_GPIO0    2
+ */
+ 
 void setup() {
   pinMode(led, OUTPUT);
   pinMode(resetPin, OUTPUT);
