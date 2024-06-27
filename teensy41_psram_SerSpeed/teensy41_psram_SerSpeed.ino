@@ -35,7 +35,8 @@ void loop_ISR() {
     Serial.print('.');
   int c = '\n', ii = 0;
   char b[256];
-  do {
+  do                           {
+
     if (Serial.available()) {
       b[ii++] = c = Serial.read();
     }
@@ -157,6 +158,32 @@ bool check_fixed_pattern(uint32_t pattern)
   for (p = memory_begin; p < memory_end; p++) {
     uint32_t actual = *p;
     if (actual != pattern) return fail_message(p, actual, pattern);
+  }
+  return true;
+}
+
+// fill the entire RAM each location's addredd, then check it in non-linear order
+bool check_by_address()
+{
+  volatile uint32_t *p;
+  Serial.printf("testing with address location in that location\n");
+  for (p = memory_begin; p < memory_end; p++) {
+    *p = (uint32_t)p;
+  }
+  arm_dcache_flush_delete((void *)memory_begin,
+                          (uint32_t)memory_end - (uint32_t)memory_begin);
+  uint32_t ii, jj, kk, ll;
+  jj = memory_end - memory_begin;
+  ll = jj / 32 * 1024;
+  for ( kk = 0; kk < 32 * 1024; kk += ll ) {
+    for ( ii = 0; ii<ll && ii <= memory_end; ii++ ) {
+    for ( ii = 0; ii<ll && ii <= memory_end; ii++ ) {
+
+    }
+  }
+  for (p = memory_begin; p < memory_end; p++) {
+    uint32_t actual = *p;
+    if (actual != (uint32_t)p) return fail_message(p, actual, (uint32_t)p);
   }
   return true;
 }

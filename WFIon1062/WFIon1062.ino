@@ -21,7 +21,7 @@ void loop() {
 #endif
   if ( F_CPU_ACTUAL > 30000000 ) // T_4.0 at 35C==95F w/WFI
     set_arm_clock(24000000);
-#if 0 // To wake from WFI require an explicit interrupt
+#if 1 // To wake from WFI require an explicit interrupt
 #if 0 // To wake from WFI require an intervaltimer interrupt
   if ( !doneOnce ) {
     Serial.println( "   wake with intervaltimer" );

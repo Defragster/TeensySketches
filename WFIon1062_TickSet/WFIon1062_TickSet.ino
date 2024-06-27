@@ -22,7 +22,7 @@ void setupRTCInterrupt( uint8_t valPIF ) {
 void setup()
 {
   pinMode(LED_BUILTIN, OUTPUT);
-  setupRTCInterrupt( 12 ); // 14 is 1 Hz
+  setupRTCInterrupt( 15 ); // 14 is 1 Hz
   Serial.begin(22);
   Serial.println("\n" __FILE__ " " __DATE__ " " __TIME__);
   Serial.printf( "Millis=%lu deg  C=%2.2f \n", millis(), tempmonGetTemp() );
@@ -42,13 +42,13 @@ void loop()
     Serial.printf( "Millis=%lu [ms diff=%lu] Micros=%lu deg  C=%2.2f RTC time=%s", millis(), millis() - lMillis , micros(), tempmonGetTemp(), ctime(&tv.tv_sec) );
   else
     lCnt = 30;
-  delayMicroseconds(100);
+  delayMicroseconds(10);
   lMillis = millis();
   asm volatile( "wfi" ); // LOW POWER STALL
   if ( lCnt > 10 ) {
     resetMMclocks();
   }
-  if ( isrCnt > 100 ) {
+  if ( isrCnt > 20 ) {
     lCnt = 0;
     isrCnt = 0;
     Serial.println();
